@@ -1,0 +1,36 @@
+##
+
+um = 1e-6;
+nm = 1e-9;
+
+flag_1 = "n_wg";
+flag_0 = "n_bg";
+
+x_size = 2*um;
+y_size = 6*um;
+
+pixel_size = 100*nm;
+
+col_num = x_size/pixel_size;
+row_num = y_size/pixel_size;
+
+pixel_num = 0;
+ 
+pattern = matrix(row_num, col_num);
+
+for (i=1:row_num){
+    for (j=1:col_num){
+        index = getnamed("pixel"+num2str(pixel_num),"material");
+        pixel_num = pixel_num + 1;
+        if (index==flag_1){
+            pattern(i,j) = 1;
+        }
+        else{
+            pattern(i,j) = 0;
+        }
+    }
+}
+
+matlabsave("pixel_pattern",pattern);
+image(pattern);
+    

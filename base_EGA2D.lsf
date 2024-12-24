@@ -1,0 +1,216 @@
+##########################################################
+####### Base script for EG-ATD Optimization ##############
+####### Copyright (C) - FiOWIN Lab @ Fudan University ####
+##########################################################
+
+
+switchtolayout;
+selectall;
+delete;
+
+
+#########################
+#### Initialization #####
+#########################
+
+# following terms should be replaced with scripts edited in .py
+num_in_wg=none;
+num_out_wg=none;
+out_wg_width=none;
+in_wg_width=none;
+opt_size_x=none;
+opt_size_y=none;
+lam_c=none;
+mode_num=none;
+wavelength_span=none;
+in_mode_list=none;
+out_mode_list=none;
+
+# following terms are set to default value and manual modification to all .lsf files is required
+dx = 20e-9;
+size_x = opt_size_x+1e-6;
+size_y = opt_size_y+1e-6;
+fdtd_zspan = 2e-6;
+wg_thickness = 220e-9;
+cladding_thickness = 10e-6;
+
+
+#########################
+## Material Definition ##
+#########################
+n_wg=getindex('Si (Silicon) - Palik',c/lam_c);
+n_bg=getindex('SiO2 (Glass) - Palik',c/lam_c);
+self_define_materials=true;
+if (self_define_materials){
+    addmaterial("Dielectric");
+    setmaterial("New material 1", "Refractive Index", n_bg);
+    setmaterial("New material 1", "color", [0,255,255,255]);
+    setmaterial("New material 1", "Mesh Order", 2);
+    setmaterial("New material 1", "name", "n_bg");
+    addmaterial("Dielectric");
+    setmaterial("New material 1", "Refractive Index", n_wg);
+    setmaterial("New material 1", "color", [170,0,0,255]);
+    setmaterial("New material 1", "Mesh Order", 2);
+    setmaterial("New material 1", "name", "n_wg");
+}
+
+
+#########################
+###### add cladding #####
+#########################
+addrect;
+set("alpha", 0.2);
+set('name','cladding');
+set('x',0);
+set('x span',opt_size_x + 7e-6);
+set('y',0);
+set('y span',opt_size_y + 7e-6);
+set('z',0);
+set('z span',cladding_thickness);
+if (self_define_materials){
+    set('material',"n_bg");
+}
+else{
+    set('material',"SiO2 (Glass) - Palik");
+}
+
+
+#########################
+####### add IN WG #######
+#########################
+for (i=1:num_in_wg){
+    addrect;
+    set('name','input wg '+num2str(i));
+    set('x min',-size_x);
+    set('x max',-opt_size_x/2);
+    # This term should be determined manually according to different functionalities of devices
+    # set('y',opt_size_y/2-0.5*(1/num_in_wg)*opt_size_y-(1/num_in_wg)*(i-1)*opt_size_y);
+    set('y',opt_size_y/2-0.5*in_wg_width-(1/(num_in_wg-1))*(i-1)*(opt_size_y-in_wg_width));
+    set('y span',in_wg_width);
+    set('z',0);
+    set('z span',wg_thickness);
+    if (self_define_materials){
+        set('material',"n_wg");
+    }
+    else{
+        set('material',"Si (Silicon) - Palik");
+    }
+}
+
+
+#########################
+###### add OUT WG #######
+#########################
+for (i=1:num_out_wg){
+    addrect;
+    set('name','output wg'+num2str(i));
+    set('x min',opt_size_x/2);
+    set('x max',size_x);
+    set('y',0.5*opt_size_y-0.5*out_wg_width);
+    set('y span',out_wg_width);
+    set('z',0);
+    set('z span',wg_thickness);
+    if (self_define_materials){
+        set('material',"n_wg");
+    }
+    else{
+        set('material',"Si (Silicon) - Palik");
+    }
+}
+
+
+#########################
+###### add Source #######
+#########################
+for(i=1:mode_num) {
+    addmode;
+    set("name","Source_TE_mode"+num2str(i)+"_1550");
+    set('direction','Forward');
+    set('injection axis','x-axis');
+    # set('y',opt_size_y/2-0.5*(1/num_in_wg)*opt_size_y-(1/num_in_wg)*(i-1)*opt_size_y);
+    set('y',opt_size_y/2-0.5*in_wg_width-(1/(num_in_wg-1))*(i-1)*(opt_size_y-in_wg_width));
+    set('y span',in_wg_width+1e-6);
+    set('x',-size_x/2+0.2e-6);
+    set('z',0);
+    set('z span',fdtd_zspan);
+    set('center wavelength',lam_c);
+    set('wavelength span', wavelength_span);
+    set("mode selection", "user select");
+    set("selected mode number", in_mode_list(i));
+}
+
+
+#########################
+####### add FDTD ########
+#########################
+addfdtd;
+set('dimension','3D');
+if (self_define_materials){
+    set('background material',"n_bg");
+}
+else{
+    set('background material',"SiO2 (Glass) - Palik");
+}
+set('mesh accuracy',3);
+set('x min',-size_x/2);
+set('x max',size_x/2);
+set('y min',-size_y/2);
+set('y max',size_y/2);
+set('z',0);
+set('z span',fdtd_zspan);
+set('simulation time',5000e-15);
+set('auto shutoff min',1e-5);
+set('force symmetric z mesh', 1);
+set("z min bc","Symmetric");
+
+
+#########################
+####### add mesh ########
+#########################
+addmesh;
+set("x",0);
+set("x span",opt_size_x);
+set("y",0);
+set("y span",opt_size_y);
+set("z",0);
+set("z span",wg_thickness);
+set('override x mesh',true);
+set('override y mesh',true);
+set('override z mesh',true);
+set('dx',30e-9);
+set('dy',30e-9);
+set('dz',22e-9);
+
+
+#########################
+######## add FOM ########
+#########################
+for(i=1:mode_num) {
+    # y center of power monitors and mode_expansion monitors
+    monitor_y = 0.5*opt_size_y-0.5*out_wg_width;
+
+    addpower;
+    set('name',"fom"+num2str(i));
+    set('monitor type','2D X-normal');
+    set('x', size_x/2-0.2e-6);
+    set('y', monitor_y);
+    set('y span',out_wg_width+1e-6);
+    set('z',0);
+    set('z span',fdtd_zspan);
+
+    addmodeexpansion;
+    set("name","fom"+num2str(i)+"_mode_exp");
+    setexpansion("Output","fom"+num2str(i));
+    set('monitor type','2D X-normal');
+    set('x', size_x/2-0.2e-6);
+    set('y', monitor_y);
+    set('y span',out_wg_width+1e-6);
+    set('z',0);
+    set('z span',fdtd_zspan);
+    set("mode selection","user select");
+    set("selected mode numbers",out_mode_list(i));
+    set("override global monitor settings",false);
+}
+
+
+
