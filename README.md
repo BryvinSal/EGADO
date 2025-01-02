@@ -29,3 +29,6 @@ The lumopt and lumapi libraries are installed automatically with the software. I
 Ensure that Lumerical's FDTD software is properly installed and added to your system's PATH.  
 Make sure your license for Lumerical FDTD is active and valid before running the scripts.  
 For troubleshooting, please check the documentation of the libraries (lumopt, lumapi, splayout) and the Lumerical FDTD software.
+
+## Demo
+We upload a demo file "demo.fsp" which can be used to reproduce the device performance of the inverse-designed five-mode MUX. The estimated running time is less than 60 seconds using GPU acceleration. To run the .fsp file, Lumerical FDTD must be successfully downloaded with a valid license.
