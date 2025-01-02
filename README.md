@@ -22,7 +22,7 @@ Files starting with base_: These are Lumerical script files used for interaction
 Files starting with appendix_: Auxiliary programs used after the optimization process, such as visualization (e.g., plotting) or additional post-processing.  
 ## Instructions
 Install Python 3.6 and ensure that the required dependencies are installed.  
-Download and install the Lumerical FDTD software (2023R2.2). Ensure that you have access to a valid license.  
+Download and install the Lumerical FDTD software (2023R2.2). The estimated installing time is 1 hour. Ensure that you have access to a valid license.  
 The lumopt and lumapi libraries are installed automatically with the software. Instructions for implementation can be found at https://optics.ansys.com/hc/en-us/articles/360041873053-Session-management-Python-API
 
 ## Notes
