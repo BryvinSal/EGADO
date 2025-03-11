@@ -1,6 +1,6 @@
 # EGADO
 Codes of the custom edge-guided analog-and-digital optimization algorithm for the inverse design of silicon photonic devices.
-These are supporting materials for "Edge-guided inverse design of digital metamaterials for high-capacity multi-dimensional optical interconnect" submitted to Nature Communications. Any requests and questions can contact Dr.Sun (alsun22@m.fudan.edu.cn)
+These are supporting materials for "Edge-guided inverse design of digital metamaterial-based mode multiplexers for high-capacity multi-dimensional optical interconnect" published on Nature Communications.  Citation: Sun, A., Xing, S., Deng, X. et al. Edge-guided inverse design of digital metamaterial-based mode multiplexers for high-capacity multi-dimensional optical interconnect. Nat Commun 16, 2372 (2025). https://doi.org/10.1038/s41467-025-57689-7.  Any requests and questions can contact Dr.Sun (alsun22@m.fudan.edu.cn)
 ## Overview
 This repository contains the necessary scripts and functions for running the optimization and analysis of photonic devices using Lumerical FDTD simulations. 
 ## Requirements
